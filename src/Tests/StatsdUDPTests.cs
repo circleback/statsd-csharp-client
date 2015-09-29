@@ -87,7 +87,7 @@ namespace Tests
         [Test]
         public void send_equal_to_udp_packet_limit_is_still_sent()
         {
-            var msg = new String('f', MetricsConfig.DefaultStatsdMaxUDPPacketSize);
+            var msg = new String('f', MetricsConfig.DefaultMaxPacketSize);
             listenThread.Start();
             udp.Send(msg);
             // As long as we're at or below the limit, the packet should still be sent 
@@ -109,7 +109,7 @@ namespace Tests
         [Test]
         public void send_oversized_udp_packets_are_split_if_possible()
         {
-            var msg = new String('f', MetricsConfig.DefaultStatsdMaxUDPPacketSize - 15);
+            var msg = new String('f', MetricsConfig.DefaultMaxPacketSize - 15);
             listenThread.Start(3); // Listen for 3 messages
             statsd.Add<Statsd.Counting>(msg, 1);
             statsd.Add<Statsd.Timing>(msg, 2);
@@ -124,7 +124,7 @@ namespace Tests
         [Test]
         public void send_oversized_udp_packets_are_split_if_possible_with_multiple_messages_in_one_packet()
         {
-            var msg = new String('f', MetricsConfig.DefaultStatsdMaxUDPPacketSize / 2);
+            var msg = new String('f', MetricsConfig.DefaultMaxPacketSize / 2);
             listenThread.Start(3);
             statsd.Add<Statsd.Counting>("counter", 1);
             statsd.Add<Statsd.Counting>(msg, 2);

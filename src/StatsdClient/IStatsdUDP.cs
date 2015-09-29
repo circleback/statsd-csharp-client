@@ -1,7 +1,10 @@
 namespace StatsdClient
 {
-    public interface IStatsdUDP
+    public interface IMetricsSender
     {
         void Send(string command);
+    }
+    public interface IStatsdUDP : IMetricsSender // legacy support
+    {
     }
 }

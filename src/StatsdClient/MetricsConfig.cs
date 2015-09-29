@@ -24,12 +24,12 @@
         public string Prefix { get; set; }
 
         public const int DefaultStatsdServerPort = 8125;
-        public const int DefaultStatsdMaxUDPPacketSize = 512;
+        public const int DefaultMaxPacketSize = 512;
 
         public MetricsConfig()
         {
             StatsdServerPort = DefaultStatsdServerPort;
-            StatsdMaxUDPPacketSize = DefaultStatsdMaxUDPPacketSize;
+            StatsdMaxUDPPacketSize = DefaultMaxPacketSize;
         }
     }
 }

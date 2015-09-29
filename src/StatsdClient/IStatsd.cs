@@ -22,5 +22,7 @@ namespace StatsdClient
 
         void Add(Action actionToTime, string statName, double sampleRate=1);
         void Send(Action actionToTime, string statName, double sampleRate=1);
+        void Add<TCommandType>(string name, double value, bool isDelta) where TCommandType : IAllowsDouble, IAllowsDelta;
+        void Send<TCommandType>(string name, double value, bool isDelta) where TCommandType : IAllowsDouble, IAllowsDelta;
     }
 }
