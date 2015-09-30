@@ -85,7 +85,11 @@ namespace StatsdClient
             };
             Send();
         }
-
+        public void Add<TCommandType>(string name, string value) where TCommandType : IAllowsString
+        {
+            ThreadSafeAddCommand(GetCommand(name, value.ToString(CultureInfo.InvariantCulture),
+                _commandToUnit[typeof(TCommandType)], 1));
+        }
         public void Add<TCommandType>(string name, int value) where TCommandType : IAllowsInteger
         {
             ThreadSafeAddCommand(GetCommand(name, value.ToString(CultureInfo.InvariantCulture), 
@@ -124,7 +128,7 @@ namespace StatsdClient
             Commands = new List<string>
             {
                 GetCommand(name, prefix + value.ToString(CultureInfo.InvariantCulture),
-                _commandToUnit[typeof(TCommandType)], 1)
+                    _commandToUnit[typeof(TCommandType)], 1)
             };
             Send();
         }

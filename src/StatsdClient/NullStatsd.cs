@@ -63,5 +63,10 @@ namespace StatsdClient
         public void Send<TCommandType>(string name, double value, bool isDelta) where TCommandType : IAllowsDouble, IAllowsDelta
         {
         }
+
+        public void Add<TCommandType>(string name, string value) where TCommandType : IAllowsString
+        {
+            
+        }
     }
 }
