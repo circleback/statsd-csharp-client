@@ -17,7 +17,7 @@ namespace StatsdClient
         private readonly object _commandCollectionLock = new object();
 
         private IStopWatchFactory StopwatchFactory { get; set; }
-        private IMetricsSender Udp { get; set; }
+        private IMetricsSender Sender { get; set; }
         private IRandomGenerator RandomGenerator { get; set; }
 
         private readonly string _prefix;
@@ -41,13 +41,16 @@ namespace StatsdClient
                                                                            {typeof (Set), "s"}
                                                                        };
 
-        public Statsd(IMetricsSender udp, IRandomGenerator randomGenerator, IStopWatchFactory stopwatchFactory, string prefix)
+        public Statsd(IMetricsSender sender, IRandomGenerator randomGenerator, IStopWatchFactory stopwatchFactory, string prefix)
         {
+            if (sender == null) throw new ArgumentNullException("sender");
+            if (randomGenerator == null) throw new ArgumentNullException("randomGenerator");
+            if (stopwatchFactory == null) throw new ArgumentNullException("stopwatchFactory");
             Commands = new List<string>();
             StopwatchFactory = stopwatchFactory;
-            Udp = udp;
+            Sender = sender;
             RandomGenerator = randomGenerator;
-            _prefix = prefix;
+            _prefix = prefix.EndsWith(".") ? prefix : prefix + ".";
         }
 
         public Statsd(IMetricsSender udp, IRandomGenerator randomGenerator, IStopWatchFactory stopwatchFactory)
@@ -152,24 +155,25 @@ namespace StatsdClient
         }
         private string GetDeltaPrefix(double value, bool isDelta)
         {
-            return isDelta ? (value >= 0 ? "+" : "-") : string.Empty;
+            return isDelta && value >= 0 ? "+" : string.Empty;
         }
         public void Send()
         {
             try
             {
-                Udp.Send(string.Join("\n", Commands.ToArray()));
-                Commands = new List<string>();
+                Sender.Send(string.Join("", Commands.ToArray()));
+                Commands = new List<string>(); // only reset our list if it made it through properly!
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Debug.WriteLine(e.Message);
+                throw e; // let the caller handle errors
             }
         }
 
         private string GetCommand(string name, string value, string unit, double sampleRate)
         {
-            var format = sampleRate == 1 ? "{0}:{1}|{2}" : "{0}:{1}|{2}|@{3}";
+            var format = sampleRate == 1 ? "{0}:{1}|{2}\n" : "{0}:{1}|{2}|@{3}\n";
             return string.Format(CultureInfo.InvariantCulture, format, _prefix + name, value, unit, sampleRate);
         }
 
