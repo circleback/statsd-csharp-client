@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace StatsdClient
 {
@@ -42,8 +43,9 @@ namespace StatsdClient
         {
         }
 
-        public void Send()
+        public async Task Send()
         {
+            await Task.Delay(0);
         }
 
         public void Add(Action actionToTime, string statName, double sampleRate = 1)

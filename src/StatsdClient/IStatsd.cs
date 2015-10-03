@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace StatsdClient
 {
@@ -19,7 +20,7 @@ namespace StatsdClient
         void Send<TCommandType>(string name, string value) where TCommandType : IAllowsString;
         void Add<TCommandType>(string name, string value) where TCommandType : IAllowsString;
 
-        void Send();
+        Task Send();
 
         void Add(Action actionToTime, string statName, double sampleRate=1);
         void Send(Action actionToTime, string statName, double sampleRate=1);

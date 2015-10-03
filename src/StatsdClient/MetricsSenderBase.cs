@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace StatsdClient
 {
@@ -12,7 +13,7 @@ namespace StatsdClient
         protected int MaxPacketSize { get; private set; } // Set to zero for no limit.
         public IPEndPoint IPEndpoint { get; private set; }
         protected string Host { get; private set;  }
-        protected int Port { get; private set; }
+        protected int Port { get; set; }
 
         public MetricsSenderBase(string host, int port, int maxPacketSize = MetricsConfig.DefaultMaxPacketSize)
         {
@@ -22,14 +23,14 @@ namespace StatsdClient
             var ipAddress = GetIpv4Address(Host);
             IPEndpoint = new IPEndPoint(ipAddress, Port);
         }
-        protected abstract void SendCommand(byte[] command);
+        protected abstract Task SendCommand(byte[] command);
 
-        public void Send(string command)
+        public async Task Send(string command)
         {
-            Send(Encoding.ASCII.GetBytes(command));
+            await Send(Encoding.ASCII.GetBytes(command)).ConfigureAwait(false);
         }
 
-        private void Send(byte[] encodedCommand)
+        private async Task Send(byte[] encodedCommand)
         {
             if (MaxPacketSize > 0 && encodedCommand.Length > MaxPacketSize)
             {
@@ -46,14 +47,14 @@ namespace StatsdClient
 
                     var encodedCommandFirst = new byte[i];
                     Array.Copy(encodedCommand, encodedCommandFirst, encodedCommandFirst.Length); // encodedCommand[0..i-1]
-                    Send(encodedCommandFirst);
+                    await Send(encodedCommandFirst);
 
                     var remainingCharacters = encodedCommand.Length - i - 1;
                     if (remainingCharacters > 0)
                     {
                         var encodedCommandSecond = new byte[remainingCharacters];
                         Array.Copy(encodedCommand, i + 1, encodedCommandSecond, 0, encodedCommandSecond.Length); // encodedCommand[i+1..end]
-                        Send(encodedCommandSecond);
+                        await Send(encodedCommandSecond);
                     }
 
                     return; // We're done here if we were able to split the message.
@@ -65,7 +66,7 @@ namespace StatsdClient
                     // be sent without issue.
                 }
             }
-            SendCommand(encodedCommand);
+            await SendCommand(encodedCommand);
         }
 
         private IPAddress GetIpv4Address(string name)

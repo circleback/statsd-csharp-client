@@ -1,8 +1,10 @@
+using System.Threading.Tasks;
+
 namespace StatsdClient
 {
     public interface IMetricsSender
     {
-        void Send(string command);
+        Task Send(string command);
     }
     public interface IStatsdUDP : IMetricsSender // legacy support
     {
