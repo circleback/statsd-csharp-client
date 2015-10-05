@@ -8,17 +8,17 @@ namespace StatsdClient
 {
 
     [Serializable]
-    public class MetricsDeliveryException : Exception
+    public class MessageNotDeliveredException : Exception
     {
         public string Metrics { get; private set; }
-        public MetricsDeliveryException(string metrics, string message, Exception inner) : this(message, inner)
+        public MessageNotDeliveredException(string metrics, string message, Exception inner) : this(message, inner)
         {
             Metrics = metrics;
         }
-        public MetricsDeliveryException() { }
-        public MetricsDeliveryException(string message) : base(message) { }
-        public MetricsDeliveryException(string message, Exception inner) : base(message, inner) { }
-        protected MetricsDeliveryException(
+        public MessageNotDeliveredException() { }
+        public MessageNotDeliveredException(string message) : base(message) { }
+        public MessageNotDeliveredException(string message, Exception inner) : base(message, inner) { }
+        protected MessageNotDeliveredException(
           System.Runtime.Serialization.SerializationInfo info,
           System.Runtime.Serialization.StreamingContext context) : base(info, context)
         { }
