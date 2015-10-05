@@ -18,7 +18,7 @@ namespace StatsdClient
         private readonly int _retryAttempts;
         private readonly AsyncLock clientLock;
         private readonly IPAddress localIp;
-        private readonly int[] ports;
+        private readonly int[] localPorts;
         private bool _disposed = false;
         private NetworkStream _stream;
         private TcpClient _tcpClient = null;
@@ -35,14 +35,13 @@ namespace StatsdClient
             _retryAttempts = retryAttempts;
             localIp = Dns.GetHostEntry(Dns.GetHostName()).AddressList
                 .FirstOrDefault(x => x.AddressFamily == AddressFamily.InterNetwork);
-            //_tcpClient = new TcpClient(new IPEndPoint(localIp, Port)); // match local port to the remote port
             clientLock = new AsyncLock();
         }
 
-        public StatsdTCP(string host, int[] ports, bool reconnectEnabled = true, int retryAttempts = 3)
-            : this(host, GetAvailablePort(ports), reconnectEnabled, retryAttempts)
+        public StatsdTCP(string host, int remotePort, int[] localPorts, bool reconnectEnabled = true, int retryAttempts = 3)
+            : this(host, remotePort, reconnectEnabled, retryAttempts)
         {
-            this.ports = ports;
+            this.localPorts = localPorts;
         }
 
         #endregion Public Constructors
@@ -86,10 +85,10 @@ namespace StatsdClient
 
         private async Task Connect()
         {
-            Port = ports == null ? Port : GetAvailablePort(ports);
-            localEndpoint = new IPEndPoint(localIp, Port);
+            var localPort = localPorts == null ? RemotePort : GetAvailablePort(localPorts);
+            localEndpoint = new IPEndPoint(localIp, localPort);
             _tcpClient = new TcpClient(localEndpoint); // if the connection faulted, need to create a new one
-            await _tcpClient.ConnectAsync(Host, Port);
+            await _tcpClient.ConnectAsync(Host, RemotePort);
             _stream = _tcpClient.GetStream();
         }
 

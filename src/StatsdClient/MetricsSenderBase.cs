@@ -13,15 +13,15 @@ namespace StatsdClient
         protected int MaxPacketSize { get; private set; } // Set to zero for no limit.
         public IPEndPoint IPEndpoint { get; private set; }
         protected string Host { get; private set;  }
-        protected int Port { get; set; }
+        protected int RemotePort { get; private set; }
 
         public MetricsSenderBase(string host, int port, int maxPacketSize = MetricsConfig.DefaultMaxPacketSize)
         {
             Host = host;
-            Port = port;
+            RemotePort = port;
             MaxPacketSize = maxPacketSize;
             var ipAddress = GetIpv4Address(Host);
-            IPEndpoint = new IPEndPoint(ipAddress, Port);
+            IPEndpoint = new IPEndPoint(ipAddress, RemotePort);
         }
         protected abstract Task SendCommand(byte[] command);
 
