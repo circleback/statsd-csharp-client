@@ -166,7 +166,7 @@ namespace StatsdClient
                     Trace.TraceError(string.Format("Failed to write to Metrics server. Error: {0}", errorMessage));
                     var metric = Encoding.ASCII.GetString(bytesToSend);
                     // Throw and let caller decide what to do
-                    throw new MetricsDeliveryException(metric, string.Format("Failed to send Metrics after {0} " + 
+                    throw new MessageNotDeliveredException(metric, string.Format("Failed to send Metrics after {0} " + 
                         "retries. See Inner for more details.", _retryAttempts), excp);
                 }
             }
