@@ -85,9 +85,13 @@ namespace StatsdClient
 
         private async Task Connect()
         {
-            var localPort = localPorts == null ? RemotePort : GetAvailablePort(localPorts);
-            localEndpoint = new IPEndPoint(localIp, localPort);
-            _tcpClient = new TcpClient(localEndpoint); // if the connection faulted, need to create a new one
+            if (localPorts == null) _tcpClient = new TcpClient(AddressFamily.InterNetwork);
+            else
+            {
+                var localPort = GetAvailablePort(localPorts);
+                localEndpoint = new IPEndPoint(localIp, localPort);
+                _tcpClient = new TcpClient(localEndpoint); // if the connection faulted, need to create a new one
+            }
             await _tcpClient.ConnectAsync(Host, RemotePort);
             _stream = _tcpClient.GetStream();
         }
