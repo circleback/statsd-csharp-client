@@ -44,9 +44,9 @@
     <Compile Include="IStatsdUDP.cs" />
     <Compile Include="IStopwatch.cs" />
     <Compile Include="IStopWatchFactory.cs" />
+    <Compile Include="MessageNotDeliveredException.cs" />
     <Compile Include="Metrics.cs" />
     <Compile Include="MetricsConfig.cs" />
-    <Compile Include="MetricsDeliveryException.cs" />
     <Compile Include="MetricsSenderBase.cs" />
     <Compile Include="MetricsTimer.cs" />
     <Compile Include="NullStatsd.cs" />
