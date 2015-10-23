@@ -1,19 +1,19 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>$id$</id>
-    <version>$version$</version>
-    <title>Statsd C# Client</title>
-    <authors>Goncalo Pereira</authors>
-    <owners>Goncalo Pereira</owners>
-    <projectUrl>https://github.com/goncalopereira/statsd-csharp-client</projectUrl>
+    <id>ID</id>
+    <version>1.0.0</version>
+    <title>CB Core Statsd Client</title>
+    <authors>Goncalo Pereira, Josh Einhorn</authors>
+    <owners>CircleBack</owners>
+    <projectUrl>https://github.com/circleback/statsd-csharp-client</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Statsd client for C#</description>
-    <releaseNotes>Initial release.</releaseNotes>
+    <description>Circleback's Form Statsd client for C#</description>
+    <releaseNotes>Credit goes to original: https://github.com/Pereingo/statsd-csharp-client.</releaseNotes>
     <copyright>Copyright 2012</copyright>
-    <tags>stats statsd</tags>
+    <tags>stats statsd circleback</tags>
   </metadata>
   <files>
-    <file src="..\Configuration\bin\Release\StatsdClient.Configuration.dll" target="lib\net35" /> 
+    <file src="..\Configuration\bin\Release\StatsdClient.Configuration.dll" target="lib\net451" /> 
   </files>
 </package>
