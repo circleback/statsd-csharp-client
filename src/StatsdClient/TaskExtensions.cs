@@ -1,16 +1,17 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace StatsdClient
 {
     internal static class TaskExtensions
     {
-        internal static void WaitAndUnwrapException(this Task task)
+        internal static void WaitAndUnwrapException(this Task task, int waitTimeout)
         {
             var awaited = ConfigureAwaitFalse(task);
             try
             {
-                awaited.Wait();
+                awaited.Wait(waitTimeout);
             }
             catch (AggregateException agg)
             {

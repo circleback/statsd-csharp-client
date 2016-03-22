@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace StatsdClient
@@ -33,12 +34,13 @@ namespace StatsdClient
                                                                        };
 
         private readonly string _prefix;
+        private readonly int _sendWaitTimeout;
 
         #endregion Private Fields
 
         #region Public Constructors
 
-        public Statsd(IMetricsSender sender, IRandomGenerator randomGenerator, IStopWatchFactory stopwatchFactory, string prefix)
+        public Statsd(IMetricsSender sender, IRandomGenerator randomGenerator, IStopWatchFactory stopwatchFactory, string prefix, int sendWaitTimeout = Timeout.Infinite)
         {
             if (sender == null) throw new ArgumentNullException("sender");
             if (randomGenerator == null) throw new ArgumentNullException("randomGenerator");
@@ -48,14 +50,15 @@ namespace StatsdClient
             Sender = sender;
             RandomGenerator = randomGenerator;
             _prefix = prefix.EndsWith(".") ? prefix : prefix + ".";
+            _sendWaitTimeout = sendWaitTimeout;
         }
 
         public Statsd(IMetricsSender udp, IRandomGenerator randomGenerator, IStopWatchFactory stopwatchFactory)
-            : this(udp, randomGenerator, stopwatchFactory, string.Empty)
+            : this(udp, randomGenerator, stopwatchFactory, string.Empty, Timeout.Infinite)
         { }
 
-        public Statsd(IMetricsSender udp, string prefix)
-            : this(udp, new RandomGenerator(), new StopWatchFactory(), prefix)
+        public Statsd(IMetricsSender udp, string prefix, int sendWaitTimeout = Timeout.Infinite)
+            : this(udp, new RandomGenerator(), new StopWatchFactory(), prefix, sendWaitTimeout)
         { }
 
         public Statsd(IMetricsSender udp)
@@ -141,7 +144,7 @@ namespace StatsdClient
             {
                 GetCommand(name, value.ToString(CultureInfo.InvariantCulture), _commandToUnit[typeof(TCommandType)], 1)
             };
-            Send().WaitAndUnwrapException();
+            Send().WaitAndUnwrapException(_sendWaitTimeout);
         }
 
         public void Send<TCommandType>(string name, double value) where TCommandType : IAllowsDouble
@@ -151,7 +154,7 @@ namespace StatsdClient
                 GetCommand(name, string.Format(CultureInfo.InvariantCulture,"{0:F15}", value),
                 _commandToUnit[typeof(TCommandType)], 1)
             };
-            Send().WaitAndUnwrapException();
+            Send().WaitAndUnwrapException(_sendWaitTimeout);
         }
 
         public void Send<TCommandType>(string name, string value) where TCommandType : IAllowsString
@@ -160,7 +163,7 @@ namespace StatsdClient
             {
                 GetCommand(name, value.ToString(CultureInfo.InvariantCulture), _commandToUnit[typeof(TCommandType)], 1)
             };
-            Send().WaitAndUnwrapException();
+            Send().WaitAndUnwrapException(_sendWaitTimeout);
         }
 
         public void Send<TCommandType>(string name, int value, double sampleRate)
@@ -173,7 +176,7 @@ namespace StatsdClient
                     GetCommand(name, value.ToString(CultureInfo.InvariantCulture),
                     _commandToUnit[typeof(TCommandType)], sampleRate)
                 };
-                Send().WaitAndUnwrapException();
+                Send().WaitAndUnwrapException(_sendWaitTimeout);
             }
         }
 
@@ -186,7 +189,7 @@ namespace StatsdClient
                 GetCommand(name, prefix + value.ToString(CultureInfo.InvariantCulture),
                     _commandToUnit[typeof(TCommandType)], 1)
             };
-            Send().WaitAndUnwrapException();
+            Send().WaitAndUnwrapException(_sendWaitTimeout);
         }
 
         public async Task Send()
